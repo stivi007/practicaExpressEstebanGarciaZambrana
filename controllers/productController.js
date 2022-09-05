@@ -54,7 +54,7 @@ exports.putProducts = (req,res)=>{
   const products = JSON.parse(
     fs.readFileSync(`${__dirname}/../data/products.json`)
   );
-  const foundProduct = products.find((p) => p.id == req.params.id);
+  const foundProduct = products.findIndex((p) => p.id == req.params.id);
   products.splice(foundProduct,1,{
     id:Number(req.params.id),
     name:req.body.name,
