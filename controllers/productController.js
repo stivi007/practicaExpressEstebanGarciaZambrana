@@ -51,18 +51,20 @@ exports.getProductById = (req, res) => {
 };
 
 exports.putProducts = (req,res)=>{
-  const id = req.params.id-1;
-
   const products = JSON.parse(
     fs.readFileSync(`${__dirname}/../data/products.json`)
   );
-    
-  products[id]["name"]=req.body.name;
-  products[id]["price"]=req.body.price;
-  products[id]["category"]=req.body.category;
+  const foundProduct = products.find((p) => p.id == req.params.id);
+  products.splice(foundProduct,1,{
+    id:Number(req.params.id),
+    name:req.body.name,
+    price:req.body.price,
+    category:req.body.category
+  })
+  
 
   fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
-
+    console.log(products)
   res.json({
     status:"success"
   })
