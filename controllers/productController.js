@@ -1,10 +1,10 @@
 const fs = require("fs");
+const Product=require('../models/product')
 
-exports.getAllProducts = (req, res) => {
-  const products = JSON.parse(
-    fs.readFileSync(`${__dirname}/../data/products.json`)
-  );
 
+exports.getAllProducts = async(req, res) => {
+
+  const products=await Product.find();
   res.status(200).json({
     status: "success",
     timeOfRequest: req.requestTime,
@@ -15,27 +15,22 @@ exports.getAllProducts = (req, res) => {
   });
 };
 
-exports.addProduct = (req, res) => {
-  const products = JSON.parse(
-    fs.readFileSync(`${__dirname}/../data/products.json`)
-  );
-  products.push(req.body);
-  fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
+exports.addProduct = async(req, res) => {
 
+  const newProduct=await Product.create(req.body);
+  
   res.status(200).json({
     status: "success",
     data: {
-      products,
+      product:newProduct,
     },
   });
 };
 
-exports.getProductById = (req, res) => {
-  const products = JSON.parse(
-    fs.readFileSync(`${__dirname}/../data/products.json`)
-  );
+exports.getProductById = async(req, res) => {
   
-  const foundProduct = products.find((p) => p.id == req.params.id);
+  
+  const foundProduct = await Product.findById(req.params.id)
   if (foundProduct) {
     res.status(200).json({
       status: "success",
@@ -50,35 +45,19 @@ exports.getProductById = (req, res) => {
   }
 };
 
-exports.putProducts = (req,res)=>{
-  const products = JSON.parse(
-    fs.readFileSync(`${__dirname}/../data/products.json`)
-  );
-  const foundProduct = products.findIndex((p) => p.id == req.params.id);
-  products.splice(foundProduct,1,{
-    id:Number(req.params.id),
-    name:req.body.name,
-    price:req.body.price,
-    category:req.body.category
-  })
-  
-
-  fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
-    console.log(products)
+exports.putProducts = async(req,res)=>{
+  const {id}=req.params;
+  const {_id, ...resto}=req.body
+   const foundProduct= await Product.findByIdAndUpdate(id,resto);
   res.json({
-    status:"success"
+    status:"success",
   })
 }
 
-exports.deleteProducts=(req,res)=>{
-  const products = JSON.parse(
-    fs.readFileSync(`${__dirname}/../data/products.json`)
-  );
-  const id= +req.params.id;
-  const foundProduct = products.findIndex(p=>p.id==id);
-  products.splice(foundProduct,1)
-  console.log(products)
-  fs.writeFileSync(`${__dirname}/../data/products.json`, JSON.stringify(products));
+exports.deleteProducts=async(req,res)=>{
+  const {id}=req.params;
+  const {_id, ...resto}=req.body
+   const foundProduct= await Product.findByIdAndDelete(id);
   res.status(200).json({
     status:"ok"
   })
