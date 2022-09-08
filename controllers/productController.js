@@ -50,7 +50,7 @@ exports.putProducts = async(req,res)=>{
   const {_id, ...resto}=req.body
    const foundProduct= await Product.findByIdAndUpdate(id,resto);
   res.json({
-    status:"success",
+    status:"ok",
   })
 }
 
